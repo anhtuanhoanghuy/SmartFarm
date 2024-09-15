@@ -703,3 +703,21 @@ function checkTimerData() {
   }
 }
 
+var isMenu = false;
+function handleMenuClick() {
+  if (!isMenu) {
+    $(".radio-inputs").css('display','block');
+    isMenu = true;
+  } else {
+    $(".radio-inputs").css('display','none');
+    isMenu = false;
+  }
+}
+
+function closeMenu() {
+  if ($(window).width() < 480) {
+    $(".radio-inputs").css('display','none');
+    isMenu = false;
+  }
+}
+

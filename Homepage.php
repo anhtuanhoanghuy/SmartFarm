@@ -49,21 +49,22 @@
 
 
     <!-- navbar -->
+    <div class="nav-menu" onclick="handleMenuClick()">&#9776;</div>
 
     <div class="radio-inputs">
-        <label class="radio">
+        <label class="radio" onclick="closeMenu()">
           <input type="radio" name="radio" id="giamsat" checked="" />
           <span class="name">Giám sát</span>
         </label>
-        <label class="radio">
+        <label class="radio" onclick="closeMenu()">
           <input type="radio" name="radio" id="dieukhien"/>
           <span class="name">Điều khiển</span>
         </label>
-        <label class="radio">
+        <label class="radio" onclick="closeMenu()">
             <input type="radio" name="radio" id="cauhinh" />
             <span class="name">Cấu hình tự động</span>
         </label>
-        <label class="radio">
+        <label class="radio" onclick="closeMenu()">
             <input type="radio" name="radio" id="caidat" />
             <span class="name">Cài đặt</span>
         </label>
@@ -347,8 +348,8 @@
         </div>
         <div class="timer_container">
             <div class="timer_label">
-                <div>Thời gian bật</div>
-                <div>Thời gian tắt</div>    
+                <p>Thời gian bật</p>
+                <p>Thời gian tắt</p>    
             </div>
             <div id="fan_timer">
                 <!-- <div class="timer">

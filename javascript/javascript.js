@@ -98,6 +98,7 @@ $('#cauhinh').click(function(){
       },
        function(data) {
         data = JSON.parse(data);
+        console.log(data);
         data_timer = data;
         checkTimerData();
       })
@@ -535,7 +536,7 @@ function connectDevice(){
 
 
 function onConnect(topic){
-  topic =  "esp8266/dht11";
+  topic =  device + "/client";
   console.log("Subscribing to topic "+topic);
   client.subscribe(topic);
 }
@@ -597,7 +598,7 @@ function startDisconnect(){
 }
 
 function publishMessage(msg){
-  topic = "esp8266/client";
+  topic = device + "/control";
   Message = new Paho.MQTT.Message(msg);
   Message.destinationName = topic;
   client.send(Message);

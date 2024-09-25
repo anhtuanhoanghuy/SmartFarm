@@ -7,6 +7,7 @@ var device = "";
 var status_bttn = "";
 var timer = ["fan_timer","cooling_timer","frost_timer","water_timer","light_timer","isult_timer"];
 var data_timer;
+var time_out = true;
 // variables for the first series
 // var array_machine = ['0','0','0','0','0'];
 // var machine = $("input[type='radio'][name='radio-select']:checked").val();
@@ -210,7 +211,8 @@ $('#caidat').click(function(){
         $(`#button-${i}`).prop('disabled',true);
         $(`#button-${i}`).css('z-index','-1');
       }
-    }     
+    } 
+    setTimeout_bttn();    
   });
 
   $('.checkbox').change(async function() {
@@ -219,9 +221,8 @@ $('#caidat').click(function(){
     } else {
       publishMessage(`${$(this).val()}1`);
     }
-
-;
-});
+    setTimeout_bttn();
+  });
 
        
 
@@ -573,6 +574,7 @@ function onMessageArrived(message){
     // $("#data-value8").val(data.co2 + "%");
     // $("#data-value9").val(data.pH);
   } else if (feature == "dieukhien") {
+    if (time_out == true) {
       if (status_bttn == "0") {
         $('#checkbox').prop('checked',false);
         $('.checkbox').prop('checked', true);
@@ -589,6 +591,7 @@ function onMessageArrived(message){
           }
         }     
       }
+    }
   }
 }
 
@@ -721,3 +724,9 @@ function closeMenu() {
   }
 }
 
+function setTimeout_bttn(){
+  time_out = false;
+  setTimeout(() => {
+    time_out = true;
+  }, 4000);
+}

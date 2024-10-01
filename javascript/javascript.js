@@ -15,8 +15,6 @@ var time_out = true;
 // var off_value = $(`.${machine}`).find(".off_value");
 // when the document is ready
 $(document).ready(function() {
-
-  $.getJSON("https://ipinfo.io/", onLocationGot);
   $(".welcome_name").html("Xin chào " + getCookie('accountname'));
 });
 
@@ -191,8 +189,6 @@ $('#caidat').click(function(){
           device = $(this).data('value');
           $('.control').css('visibility', 'visible');
           $(`#${tabId}`).click();
-          // gps =  ['21.0380724','105.7829396'];
-          getMap();
           connectDevice();
         });
 
@@ -228,7 +224,7 @@ $('#caidat').click(function(){
 
 // **************************************************************************************
 //Covert decimaltoDMS
-function ConvertDecimalToDMS (DD) {
+function ConvertDecimalToDMS (DD,isLatitude) {
   // Tách số thập phân thành hai phần: độ và số lẻ
   let degree = DD.split (".")[0]; // lấy phần trước dấu chấm
   let decimal = DD.split (".")[1]; // lấy phần sau dấu chấm
@@ -238,17 +234,19 @@ function ConvertDecimalToDMS (DD) {
 
   // Tính ra giây từ số lẻ
   let second = Math.round ((Number ("0." + decimal) * 60 - minute) * 60);
-
+  var direction;
+  if (isLatitude) {
+      direction = (degree >= 0) ? "N" : "S";
+  } else {
+      direction = (degree >= 0) ? "E" : "W";
+  }
   // Trả về kết quả dạng string
-  return degree + "°" + minute + "'" + second + "\"";
+  return degree + "°" + minute + "'" + second + "\" " + direction;
 }
 
 // **************************************************************************************
 //Get weather
-function onLocationGot(info) {
-  let position = info.loc.split(",");
-  var lat = position[0];
-  var lon = position[1];
+function onLocationGot(lat,lon) {
   url = 'https://api.openweathermap.org/data/2.5/weather?lat=' + lat + '&lon=' + lon +'&appid=2a57a02df82bc7d87088d657a944cb5a&units=metric&lang=vi';
   async function asyncCall() {
       const response = await fetch(url);
@@ -276,15 +274,13 @@ function onLocationGot(info) {
 
 // **************************************************************************************
 //Get map
- function getMap() {
-  var gps = ['20.3524474', '106.5552532'];
+ function getMap(lat, lon) {
   var map = new Microsoft.Maps.Map('#map', {
     credentials: 'ApmjZMScf3QndIcQhYNlkzZrFokZjkqUjGE6y-3Y00-sJdpjwUvoVDlaEFQPjctJ',
   });
  //Request the user's location
   
-  var loc = new Microsoft.Maps.Location(
-   gps[0],gps[1]);
+  var loc = new Microsoft.Maps.Location(lat,lon);
 
   //Add a pushpin at the user's location.
   var pin = new Microsoft.Maps.Pushpin(loc);
@@ -556,7 +552,7 @@ function onMessageArrived(message){
   var subscribe_data = JSON.parse(message.payloadString);
   var inputString = subscribe_data.data;
   const data = inputString.split(",")
-  status_bttn = data[12];
+  status_bttn = data[14];
   if (status_bttn == "0") {
     $('#checkbox').prop('checked',false);
   } else {
@@ -565,11 +561,11 @@ function onMessageArrived(message){
   var feature = $("input[type='radio'][name='radio']:checked").attr('id');
   if (feature =='giamsat') {
     $("#data-value1").val(data[0] + "%");
-    // $("#data-value2").val(data.gps[0] + ", " + data.gps[1]);
-    $("#data-value3").val(data[1] + "°C");
-    $("#data-value4").val(data[2] + "%");
-    $("#data-value5").val(data[3] + " lux");
-    $("#data-value6").val(data[4] + "%");
+    $("#data-value2").val(ConvertDecimalToDMS(data[1],true) + ", " + ConvertDecimalToDMS(data[2],false));
+    $("#data-value3").val(data[3] + "°C");
+    $("#data-value4").val(data[4] + "%");
+    $("#data-value5").val(data[5] + " lux");
+    $("#data-value6").val(data[6] + "%");
     // $("#data-value7").val(data.o2 + "%");
     // $("#data-value8").val(data.co2 + "%");
     // $("#data-value9").val(data.pH);
@@ -583,7 +579,7 @@ function onMessageArrived(message){
       } else {
         $('.checkbox').attr('disabled', false);
         $('.checkbox').css('z-index','3');
-        for (var i=5;i<=11;i++) {
+        for (var i=7;i<=13;i++) {
           if(data[i]=='0') {
             $(`#button-${i-4}`).prop('checked',true);
           } else if (data[i]=='1'){
@@ -593,6 +589,8 @@ function onMessageArrived(message){
       }
     }
   }
+  $.getJSON("https://ipinfo.io/", onLocationGot(data[1],data[2]));
+  getMap(data[1],data[2]);
 }
 
 function startDisconnect(){
